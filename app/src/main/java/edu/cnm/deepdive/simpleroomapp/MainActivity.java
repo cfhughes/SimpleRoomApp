@@ -3,6 +3,8 @@ package edu.cnm.deepdive.simpleroomapp;
 import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ArrayAdapter;
@@ -11,6 +13,8 @@ import android.widget.EditText;
 import android.widget.ListView;
 import edu.cnm.deepdive.simpleroomapp.model.Note;
 import edu.cnm.deepdive.simpleroomapp.model.NoteDatabase;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -18,9 +22,9 @@ public class MainActivity extends AppCompatActivity {
 
   private Button newNote;
   private EditText noteText;
-  private ListView notesList;
+  private RecyclerView notesList;
   private NoteDatabase database;
-  private ArrayAdapter<Note> adapter;
+  private NoteAdapter adapter;
 
   @Override
   protected void onCreate(Bundle savedInstanceState) {
@@ -29,8 +33,9 @@ public class MainActivity extends AppCompatActivity {
     newNote = findViewById(R.id.new_note_button);
     noteText = findViewById(R.id.new_note_text);
     notesList = findViewById(R.id.notes_list);
-    adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1);
+    adapter = new NoteAdapter(new ArrayList<Note>());
     notesList.setAdapter(adapter);
+    notesList.setLayoutManager(new LinearLayoutManager(this));
     newNote.setOnClickListener(new OnClickListener() {
       @Override
       public void onClick(View v) {
@@ -71,8 +76,9 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onPostExecute(List<Note> notes) {
-      adapter.clear();
-      adapter.addAll(notes);
+      adapter.setNotes(notes);
+      adapter.notifyItemInserted(0);
+      notesList.scrollToPosition(0);
     }
 
   }
